@@ -3,8 +3,8 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ChatAction
 
-from .fsm_states import GPTRequest, GPTTalk
-from keyboards.inline_kb import ikb_talk_back
+from .fsm_states import GPTRequest, GPTTalk, GPTQuiz
+from keyboards.inline_kb import ikb_talk_back, ikb_quiz_menu
 from resources import resource
 from cls import gpt_client
 from cls.chat_gpt import ChatGPTMessage
@@ -51,3 +51,21 @@ async def question_for_celebrity(message: Message, bot: Bot, state: FSMContext):
         reply_markup=ikb_talk_back(),
     )
     await state.update_data({'history': messages})
+
+
+@fsm_router.message(GPTQuiz.wait_for_answer)
+async def quiz_answer(message: Message, state: FSMContext):
+    user_answer = message.text
+    data = await state.get_data()
+    message_list = data['messages']
+    message_list.update(GPTRole.USER, user_answer)
+    response = await gpt_client.request(message_list)
+    my_score = data['score'] + 1 if response == 'Правильно!' else data['score']
+    message_list.update(GPTRole.CHAT, response)
+    message_text = f'Ваш счет: {my_score}\n{response}'
+    await message.answer(
+        text=message_text,
+        reply_markup=ikb_quiz_menu(),
+    )
+    await state.update_data({'score': my_score})
+    await state.set_state(GPTQuiz.wait_for_next_action)

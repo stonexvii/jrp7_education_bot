@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from cls.chat_gpt import ChatGPT, ChatGPTMessage
 from keyboards.reply_kb import kb_main_menu
-from keyboards.inline_kb import ikb_next_random, ikb_talk_celebrity
+from keyboards.inline_kb import ikb_next_random, ikb_talk_celebrity, ikb_quiz_select
 from resources import resource
 from .fsm_states import GPTRequest
 
@@ -57,4 +57,14 @@ async def talk_command(message: Message, bot: Bot):
         photo=resource.images['talk'],
         caption=resource.messages['talk'],
         reply_markup=ikb_talk_celebrity(),
+    )
+
+
+@command_router.message(Command('quiz'))
+async def quiz_command(message: Message, bot: Bot):
+    await bot.send_photo(
+        chat_id=message.from_user.id,
+        photo=resource.images['quiz'],
+        caption=resource.messages['quiz'],
+        reply_markup=ikb_quiz_select(),
     )

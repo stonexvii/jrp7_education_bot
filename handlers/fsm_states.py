@@ -7,3 +7,8 @@ class GPTRequest(StatesGroup):
 
 class GPTTalk(StatesGroup):
     wait_for_answer = State()
+
+
+class GPTQuiz(StatesGroup):
+    wait_for_answer = State()
+    wait_for_next_action = State()

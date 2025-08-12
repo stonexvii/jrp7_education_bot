@@ -9,3 +9,8 @@ class RandomGPT(CallbackData, prefix='RG'):
 class TalkGPT(CallbackData, prefix='TG'):
     button: str
     file_name: str = 'back'
+
+
+class QuizGPT(CallbackData, prefix='QG'):
+    button: str
+    subject: str
